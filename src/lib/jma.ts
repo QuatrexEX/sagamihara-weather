@@ -6,8 +6,6 @@ const JMA_FORECAST_URL = 'https://www.jma.go.jp/bosai/forecast/data/forecast/140
 const KANAGAWA_WEST_AREA_CODE = '140020'
 // 神奈川県全体のarea code（週間予報用）
 const KANAGAWA_PREF_CODE = '140000'
-// 小田原の気温観測点コード（相模原市に近い西部の観測点）
-const ODAWARA_TEMP_CODE = '46166'
 
 interface JMAForecastResponse {
   publishingOffice: string
@@ -60,7 +58,6 @@ export async function fetchJMAForecast(): Promise<WeatherForecast[]> {
   if (dailyForecast?.timeSeries) {
     const weatherSeries = dailyForecast.timeSeries[0]
     const popSeries = dailyForecast.timeSeries[1]
-    const tempSeries = dailyForecast.timeSeries[2]
 
     const weatherArea = weatherSeries?.areas?.find(
       (a) => a.area.code === KANAGAWA_WEST_AREA_CODE
@@ -87,29 +84,6 @@ export async function fetchJMAForecast(): Promise<WeatherForecast[]> {
       })
     }
 
-    // 気温を追加（小田原の観測点データを使用）
-    const tempAreaForDaily = tempSeries?.areas?.find(
-      (a) => a.area.code === ODAWARA_TEMP_CODE
-    )
-    if (tempAreaForDaily && tempSeries?.timeDefines) {
-      tempSeries.timeDefines.forEach((time, index) => {
-        const date = time.split('T')[0]
-        const hour = parseInt(time.split('T')[1]?.split(':')[0] || '0', 10)
-        const forecast = forecasts.find((f) => f.date === date)
-        if (forecast && tempAreaForDaily.temps?.[index]) {
-          const temp = parseInt(tempAreaForDaily.temps[index], 10)
-          if (!isNaN(temp)) {
-            // 時刻で判定：朝（0-6時）は最低気温、日中（9時以降）は最高気温
-            if (hour <= 6) {
-              forecast.tempLow = temp
-            } else {
-              forecast.tempHigh = temp
-            }
-          }
-        }
-      })
-    }
-
     // 降水確率を追加
     if (popArea && popSeries?.timeDefines) {
       popSeries.timeDefines.forEach((time, index) => {
@@ -130,13 +104,9 @@ export async function fetchJMAForecast(): Promise<WeatherForecast[]> {
   const weeklyForecast = data[1]
   if (weeklyForecast?.timeSeries) {
     const weatherSeries = weeklyForecast.timeSeries[0]
-    const tempSeries = weeklyForecast.timeSeries[1]
 
     const weatherArea = weatherSeries?.areas?.find(
       (a) => a.area.code === KANAGAWA_PREF_CODE
-    )
-    const tempArea = tempSeries?.areas?.find(
-      (a) => a.area.code === ODAWARA_TEMP_CODE
     )
 
     if (weatherArea && weatherSeries.timeDefines) {
@@ -149,8 +119,8 @@ export async function fetchJMAForecast(): Promise<WeatherForecast[]> {
             date,
             weatherCode: weatherArea.weatherCodes?.[index] || '100',
             weatherText: getWeatherTextFromCode(weatherArea.weatherCodes?.[index] || '100'),
-            tempHigh: tempArea?.tempsMax?.[index] ? parseInt(tempArea.tempsMax[index], 10) : null,
-            tempLow: tempArea?.tempsMin?.[index] ? parseInt(tempArea.tempsMin[index], 10) : null,
+            tempHigh: null,
+            tempLow: null,
             pop: weatherArea.pops?.[index] ? parseInt(weatherArea.pops[index], 10) : null,
           })
         }

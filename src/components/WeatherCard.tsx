@@ -52,31 +52,6 @@ export default function WeatherCard({ forecast, isToday = false }: WeatherCardPr
         </p>
       </div>
 
-      {/* 気温 */}
-      <div className="flex justify-center items-center gap-6 mt-6">
-        {forecast.tempHigh !== null && (
-          <div className="text-center">
-            <p className="text-xs text-white/60 mb-1">最高</p>
-            <p className="text-3xl font-light temp-high">
-              {forecast.tempHigh}
-              <span className="text-lg">°C</span>
-            </p>
-          </div>
-        )}
-        {forecast.tempHigh !== null && forecast.tempLow !== null && (
-          <div className="w-px h-12 bg-white/20" />
-        )}
-        {forecast.tempLow !== null && (
-          <div className="text-center">
-            <p className="text-xs text-white/60 mb-1">最低</p>
-            <p className="text-3xl font-light temp-low">
-              {forecast.tempLow}
-              <span className="text-lg">°C</span>
-            </p>
-          </div>
-        )}
-      </div>
-
       {/* 降水確率 */}
       {forecast.pop !== null && (
         <div className="mt-6 pt-4 border-t border-white/10">

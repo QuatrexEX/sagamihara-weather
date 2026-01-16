@@ -1,70 +1,325 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 和モダンカラーパレット */
+  --color-sora: #5B8FB9;      /* 空色 */
+  --color-asagi: #48929B;     /* 浅葱 */
+  --color-kumo: #9BA4B5;      /* 雲色 */
+  --color-ame: #4A5568;       /* 雨色 */
+  --color-yuki: #E8EDF2;      /* 雪色 */
+  --color-hi: #F59E0B;        /* 陽 */
+  --color-aka: #EF4444;       /* 赤 */
+  --color-ao: #3B82F6;        /* 青 */
+
+  /* グラデーション */
+  --gradient-sunny: linear-gradient(135deg, #87CEEB 0%, #5B8FB9 30%, #F8B500 100%);
+  --gradient-cloudy: linear-gradient(135deg, #9BA4B5 0%, #7B8794 50%, #5C6670 100%);
+  --gradient-rainy: linear-gradient(135deg, #4A5568 0%, #2D3748 50%, #1A202C 100%);
+  --gradient-snowy: linear-gradient(135deg, #E8EDF2 0%, #CBD5E0 50%, #A0AEC0 100%);
+
+  /* シャドウ */
+  --shadow-soft: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 40px rgba(255, 255, 255, 0.2);
+  --shadow-inner: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  /* ガラスモーフィズム */
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-blur: blur(20px);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --animate-float: float 3s ease-in-out infinite;
-  --animate-float-delayed: float 3s ease-in-out infinite 1.5s;
-  --animate-cloud: cloud 20s linear infinite;
-  --animate-rain: rain 0.5s linear infinite;
-  --animate-snow: snow 5s linear infinite;
-  --animate-spin-slow: spin 8s linear infinite;
-  --animate-pulse: pulse 2s ease-in-out infinite;
+  --font-sans: var(--font-zen-kaku);
+  --font-display: var(--font-shippori);
+
+  /* アニメーション */
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-float-delayed: float 4s ease-in-out infinite 2s;
+  --animate-drift: drift 25s linear infinite;
+  --animate-rain-drop: rain-drop 1s linear infinite;
+  --animate-snow-fall: snow-fall 8s linear infinite;
+  --animate-sun-pulse: sun-pulse 4s ease-in-out infinite;
+  --animate-shimmer: shimmer 3s ease-in-out infinite;
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  --animate-slide-up: slide-up 0.5s ease-out forwards;
+  --animate-scale-in: scale-in 0.4s ease-out forwards;
+}
+
+/* ベーススタイル */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-zen-kaku), "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Weather animations */
+/* 見出しフォント */
+h1, h2, h3 {
+  font-family: var(--font-shippori), "Hiragino Mincho ProN", serif;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* ガラスカード */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-soft);
+}
+
+.glass-card-strong {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow-soft), var(--shadow-glow);
+}
+
+/* グラデーションテキスト */
+.text-gradient {
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 装飾的な円 */
+.decorative-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ===== アニメーション定義 ===== */
+
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+  75% {
+    transform: translateY(-4px) rotate(-1deg);
+  }
 }
 
-@keyframes cloud {
-  0% { transform: translateX(-150px); }
-  100% { transform: translateX(calc(100vw + 150px)); }
+@keyframes drift {
+  0% {
+    transform: translateX(-200px) translateY(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vw + 200px)) translateY(20px);
+    opacity: 0;
+  }
 }
 
-@keyframes rain {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(100vh); opacity: 0.3; }
+@keyframes rain-drop {
+  0% {
+    transform: translateY(-20px) scaleY(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(100vh) scaleY(1.5);
+    opacity: 0;
+  }
 }
 
-@keyframes snow {
-  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(100vh) rotate(360deg); opacity: 0.3; }
+@keyframes snow-fall {
+  0% {
+    transform: translateY(-20px) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh) translateX(30px) rotate(360deg);
+    opacity: 0;
+  }
 }
 
-/* Animation utility classes */
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+@keyframes sun-pulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
 }
 
-.animate-float-delayed {
-  animation: float 3s ease-in-out infinite 1.5s;
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }
 
-.animate-cloud {
-  animation: cloud 20s linear infinite;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.animate-rain {
-  animation: rain 0.5s linear infinite;
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.animate-snow {
-  animation: snow 5s linear infinite;
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.animate-spin-slow {
-  animation: spin 8s linear infinite;
+@keyframes sun-ray {
+  0%, 100% {
+    opacity: 0.6;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: rotate(180deg) scale(1.1);
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: translateX(0) scaleY(1);
+  }
+  50% {
+    transform: translateX(-25px) scaleY(0.9);
+  }
+}
+
+/* ユーティリティクラス */
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-float-delayed { animation: float 4s ease-in-out infinite 2s; }
+.animate-drift { animation: drift 25s linear infinite; }
+.animate-rain-drop { animation: rain-drop 1s linear infinite; }
+.animate-snow-fall { animation: snow-fall 8s linear infinite; }
+.animate-sun-pulse { animation: sun-pulse 4s ease-in-out infinite; }
+.animate-shimmer { animation: shimmer 3s ease-in-out infinite; }
+.animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
+.animate-slide-up { animation: slide-up 0.5s ease-out forwards; }
+.animate-scale-in { animation: scale-in 0.4s ease-out forwards; }
+.animate-sun-ray { animation: sun-ray 8s linear infinite; }
+
+/* 遅延アニメーション */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+
+/* スクロールバーのスタイリング */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* セレクション */
+::selection {
+  background: rgba(91, 143, 185, 0.4);
+  color: white;
+}
+
+/* フォーカススタイル */
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
+/* 温度表示用 */
+.temp-high {
+  color: #FCA5A5;
+  text-shadow: 0 0 10px rgba(252, 165, 165, 0.5);
+}
+
+.temp-low {
+  color: #93C5FD;
+  text-shadow: 0 0 10px rgba(147, 197, 253, 0.5);
+}
+
+/* ホバーエフェクト */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* グラデーションボーダー */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }

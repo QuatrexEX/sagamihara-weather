@@ -22,7 +22,13 @@
       "mcp__plugin_supabase_supabase__list_extensions",
       "mcp__plugin_supabase_supabase__get_project_url",
       "mcp__plugin_supabase_supabase__get_publishable_keys",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(git push)",
+      "Bash(vercel link:*)",
+      "Bash(vercel:*)",
+      "Bash(npx vercel --prod)",
+      "Bash(curl:*)",
+      "Skill(frontend-design:frontend-design)"
     ]
   }
 }

@@ -27,51 +27,55 @@ export default async function Home() {
 
   return (
     <WeatherBackground weatherType={currentWeatherType}>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
         {/* Header */}
-        <header className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
+        <header className="text-center mb-10 animate-fade-in">
+          <h1 className="text-4xl md:text-5xl text-white drop-shadow-lg tracking-wider">
             相模原市の天気
           </h1>
-          <p className="text-white/80 mt-2">神奈川県西部</p>
+          <p className="text-white/70 mt-3 tracking-wide">神奈川県西部</p>
         </header>
 
         {/* Navigation */}
-        <nav className="flex justify-center gap-4 mb-8">
+        <nav className="flex justify-center gap-3 mb-10 animate-fade-in">
           <Link
             href="/"
-            className="px-4 py-2 bg-white/30 backdrop-blur-sm rounded-full text-white font-medium hover:bg-white/40 transition-colors"
+            className="px-5 py-2.5 glass-card-strong rounded-full text-white font-medium tracking-wide transition-all hover:scale-105"
           >
             天気予報
           </Link>
           <Link
             href="/history"
-            className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white/80 hover:bg-white/30 transition-colors"
+            className="px-5 py-2.5 glass-card rounded-full text-white/80 tracking-wide hover:bg-white/20 transition-all hover:scale-105"
           >
             履歴カレンダー
           </Link>
         </nav>
 
         {/* Today & Tomorrow */}
-        <section className="mb-8">
-          <h2 className="text-xl font-bold text-white mb-4 drop-shadow">今日・明日の天気</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <section className="mb-10">
+          <h2 className="text-2xl text-white mb-5 tracking-wide animate-fade-in">
+            今日・明日の天気
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {today && <WeatherCard forecast={today} isToday />}
             {tomorrow && <WeatherCard forecast={tomorrow} />}
           </div>
         </section>
 
         {/* Weekly Forecast */}
-        <section>
+        <section className="mb-10">
           {weeklyForecasts.length > 0 && (
             <WeeklyForecast forecasts={weeklyForecasts} />
           )}
         </section>
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-white/60 text-sm">
-          <p>データ提供: 気象庁</p>
-          <p className="mt-1">最終更新: {new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}</p>
+        <footer className="text-center text-white/50 text-sm animate-fade-in">
+          <p className="tracking-wide">データ提供: 気象庁</p>
+          <p className="mt-2 text-xs">
+            最終更新: {new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}
+          </p>
         </footer>
       </div>
     </WeatherBackground>

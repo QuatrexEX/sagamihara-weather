@@ -25,35 +25,43 @@ export default function HistoryContent({ records, initialYear, initialMonth, tod
     }
   }
 
+  // 統計データの計算
+  const stats = {
+    total: records.length,
+    sunny: records.filter((r) => r.weather_code.startsWith('1')).length,
+    cloudy: records.filter((r) => r.weather_code.startsWith('2')).length,
+    rainy: records.filter((r) => r.weather_code.startsWith('3') || r.weather_code.startsWith('4')).length,
+  }
+
   return (
     <WeatherBackground weatherType={currentWeatherType}>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
         {/* Header */}
-        <header className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
+        <header className="text-center mb-10 animate-fade-in">
+          <h1 className="text-4xl md:text-5xl text-white drop-shadow-lg tracking-wider">
             天気の履歴
           </h1>
-          <p className="text-white/80 mt-2">過去1年間の天気記録</p>
+          <p className="text-white/70 mt-3 tracking-wide">過去1年間の天気記録</p>
         </header>
 
         {/* Navigation */}
-        <nav className="flex justify-center gap-4 mb-8">
+        <nav className="flex justify-center gap-3 mb-10 animate-fade-in">
           <Link
             href="/"
-            className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white/80 hover:bg-white/30 transition-colors"
+            className="px-5 py-2.5 glass-card rounded-full text-white/80 tracking-wide hover:bg-white/20 transition-all hover:scale-105"
           >
             天気予報
           </Link>
           <Link
             href="/history"
-            className="px-4 py-2 bg-white/30 backdrop-blur-sm rounded-full text-white font-medium hover:bg-white/40 transition-colors"
+            className="px-5 py-2.5 glass-card-strong rounded-full text-white font-medium tracking-wide transition-all hover:scale-105"
           >
             履歴カレンダー
           </Link>
         </nav>
 
         {/* Calendar */}
-        <section>
+        <section className="mb-10">
           <Calendar
             records={records}
             initialYear={initialYear}
@@ -64,40 +72,32 @@ export default function HistoryContent({ records, initialYear, initialMonth, tod
 
         {/* Stats */}
         {records.length > 0 && (
-          <section className="mt-8 backdrop-blur-md bg-white/20 rounded-2xl p-4 md:p-6">
-            <h2 className="text-xl font-bold text-white mb-4">統計</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center text-white">
-              <div>
-                <p className="text-3xl font-bold">{records.length}</p>
-                <p className="text-sm opacity-80">記録日数</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold">
-                  {records.filter((r) => r.weather_code.startsWith('1')).length}
-                </p>
-                <p className="text-sm opacity-80">晴れの日</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold">
-                  {records.filter((r) => r.weather_code.startsWith('2')).length}
-                </p>
-                <p className="text-sm opacity-80">曇りの日</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold">
-                  {records.filter((r) => r.weather_code.startsWith('3') || r.weather_code.startsWith('4')).length}
-                </p>
-                <p className="text-sm opacity-80">雨/雪の日</p>
-              </div>
+          <section className="glass-card rounded-3xl p-5 md:p-7 mb-10 animate-fade-in">
+            <h2 className="text-2xl text-white mb-6 tracking-wide">統計</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <StatCard value={stats.total} label="記録日数" icon="📊" />
+              <StatCard value={stats.sunny} label="晴れの日" icon="☀️" />
+              <StatCard value={stats.cloudy} label="曇りの日" icon="☁️" />
+              <StatCard value={stats.rainy} label="雨/雪の日" icon="🌧️" />
             </div>
           </section>
         )}
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-white/60 text-sm">
-          <p>データ提供: 気象庁</p>
+        <footer className="text-center text-white/50 text-sm animate-fade-in">
+          <p className="tracking-wide">データ提供: 気象庁</p>
         </footer>
       </div>
     </WeatherBackground>
+  )
+}
+
+function StatCard({ value, label, icon }: { value: number; label: string; icon: string }) {
+  return (
+    <div className="bg-white/10 rounded-2xl p-4 text-center hover-lift transition-all">
+      <div className="text-2xl mb-2">{icon}</div>
+      <p className="text-3xl font-light text-white mb-1">{value}</p>
+      <p className="text-sm text-white/60">{label}</p>
+    </div>
   )
 }

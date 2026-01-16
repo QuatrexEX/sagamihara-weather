@@ -52,37 +52,41 @@ export default function Calendar({ records, initialYear, initialMonth, onWeather
   const selectedRecord = selectedDate ? recordMap.get(selectedDate) : null
 
   return (
-    <div className="backdrop-blur-md bg-white/20 rounded-2xl p-4 md:p-6">
+    <div className="glass-card rounded-3xl p-5 md:p-7 animate-fade-in">
       {/* Month Navigation */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8">
         <button
           onClick={prevMonth}
-          className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors text-white"
+          className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-all duration-300 text-white group"
+          aria-label="前月"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h2 className="text-2xl font-bold text-white">
+
+        <h2 className="text-2xl md:text-3xl text-white tracking-wider">
           {year}年{month}月
         </h2>
+
         <button
           onClick={nextMonth}
-          className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors text-white"
+          className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-all duration-300 text-white group"
+          aria-label="翌月"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
 
       {/* Day Headers */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 gap-1 mb-3">
         {['日', '月', '火', '水', '木', '金', '土'].map((day, index) => (
           <div
             key={day}
             className={`text-center text-sm font-medium py-2 ${
-              index === 0 ? 'text-red-300' : index === 6 ? 'text-blue-300' : 'text-white/80'
+              index === 0 ? 'text-red-300' : index === 6 ? 'text-blue-300' : 'text-white/60'
             }`}
           >
             {day}
@@ -91,7 +95,7 @@ export default function Calendar({ records, initialYear, initialMonth, onWeather
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1.5">
         {/* Empty cells for days before the first day of month */}
         {[...Array(firstDayOfMonth)].map((_, index) => (
           <div key={`empty-${index}`} className="aspect-square" />
@@ -111,23 +115,29 @@ export default function Calendar({ records, initialYear, initialMonth, onWeather
               key={day}
               onClick={() => handleDateSelect(dateStr)}
               className={`
-                aspect-square rounded-lg flex flex-col items-center justify-center
-                transition-all hover:scale-105
-                ${isSelected ? 'bg-white/40 ring-2 ring-white' : 'bg-white/10 hover:bg-white/20'}
-                ${isToday ? 'ring-2 ring-yellow-300' : ''}
+                aspect-square rounded-xl flex flex-col items-center justify-center
+                transition-all duration-300 relative group
+                ${isSelected
+                  ? 'bg-white/30 ring-2 ring-white shadow-lg scale-105'
+                  : 'bg-white/5 hover:bg-white/15'
+                }
+                ${isToday && !isSelected ? 'ring-2 ring-amber-400/60' : ''}
               `}
             >
               <span
-                className={`text-sm ${
-                  dayOfWeek === 0 ? 'text-red-300' : dayOfWeek === 6 ? 'text-blue-300' : 'text-white'
+                className={`text-sm font-medium ${
+                  dayOfWeek === 0 ? 'text-red-300' : dayOfWeek === 6 ? 'text-blue-300' : 'text-white/90'
                 }`}
               >
                 {day}
               </span>
               {record && (
-                <span className="text-lg leading-none">
+                <span className="text-lg leading-none mt-0.5 group-hover:scale-110 transition-transform">
                   {getWeatherEmoji(record.weather_code)}
                 </span>
+              )}
+              {isToday && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-amber-400 rounded-full" />
               )}
             </button>
           )
@@ -136,34 +146,46 @@ export default function Calendar({ records, initialYear, initialMonth, onWeather
 
       {/* Selected Date Details */}
       {selectedRecord && (
-        <div className="mt-6 p-4 bg-white/20 rounded-xl">
-          <h3 className="text-lg font-bold text-white mb-2">
+        <div className="mt-8 p-5 bg-white/10 rounded-2xl border border-white/20 animate-scale-in">
+          <h3 className="text-lg text-white mb-4 tracking-wide">
             {selectedDate?.replace(/-/g, '/')}の天気
           </h3>
-          <div className="flex items-center gap-4">
-            <span className="text-4xl">{getWeatherEmoji(selectedRecord.weather_code)}</span>
-            <div className="text-white">
-              <p className="text-lg font-medium">{selectedRecord.weather_text}</p>
-              <p className="text-sm opacity-80">
-                {selectedRecord.temp_high !== null && (
-                  <span className="text-red-300">最高 {selectedRecord.temp_high}°C</span>
-                )}
-                {selectedRecord.temp_high !== null && selectedRecord.temp_low !== null && ' / '}
-                {selectedRecord.temp_low !== null && (
-                  <span className="text-blue-300">最低 {selectedRecord.temp_low}°C</span>
-                )}
+          <div className="flex items-center gap-6">
+            <div className="text-6xl animate-float">
+              {getWeatherEmoji(selectedRecord.weather_code)}
+            </div>
+            <div className="flex-1">
+              <p className="text-xl font-medium text-white mb-2">
+                {selectedRecord.weather_text}
               </p>
-              {selectedRecord.pop !== null && (
-                <p className="text-sm opacity-80">降水確率 {selectedRecord.pop}%</p>
-              )}
+              <div className="flex flex-wrap gap-4 text-sm">
+                {selectedRecord.temp_high !== null && (
+                  <div className="flex items-center gap-1">
+                    <span className="text-white/60">最高</span>
+                    <span className="temp-high font-medium">{selectedRecord.temp_high}°C</span>
+                  </div>
+                )}
+                {selectedRecord.temp_low !== null && (
+                  <div className="flex items-center gap-1">
+                    <span className="text-white/60">最低</span>
+                    <span className="temp-low font-medium">{selectedRecord.temp_low}°C</span>
+                  </div>
+                )}
+                {selectedRecord.pop !== null && (
+                  <div className="flex items-center gap-1">
+                    <span className="text-white/60">降水確率</span>
+                    <span className="text-white font-medium">{selectedRecord.pop}%</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {selectedDate && !selectedRecord && (
-        <div className="mt-6 p-4 bg-white/20 rounded-xl">
-          <p className="text-white/80 text-center">
+        <div className="mt-8 p-5 bg-white/10 rounded-2xl border border-white/20 animate-scale-in">
+          <p className="text-white/70 text-center">
             {selectedDate?.replace(/-/g, '/')}のデータはありません
           </p>
         </div>

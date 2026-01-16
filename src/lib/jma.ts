@@ -2,8 +2,12 @@ import { WeatherForecast } from '@/types/weather'
 
 const JMA_FORECAST_URL = 'https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json'
 
-// 神奈川県西部のarea code
+// 神奈川県西部のarea code（今日〜明後日の予報用）
 const KANAGAWA_WEST_AREA_CODE = '140020'
+// 神奈川県全体のarea code（週間予報用）
+const KANAGAWA_PREF_CODE = '140000'
+// 横浜の気温観測点コード（週間予報の気温用）
+const YOKOHAMA_TEMP_CODE = '46106'
 
 interface JMAForecastResponse {
   publishingOffice: string
@@ -121,16 +125,17 @@ export async function fetchJMAForecast(): Promise<WeatherForecast[]> {
   }
 
   // 週間予報（2番目のデータセット）
+  // 週間予報は神奈川県全体（140000）のデータのみ提供される
   const weeklyForecast = data[1]
   if (weeklyForecast?.timeSeries) {
     const weatherSeries = weeklyForecast.timeSeries[0]
     const tempSeries = weeklyForecast.timeSeries[1]
 
     const weatherArea = weatherSeries?.areas?.find(
-      (a) => a.area.code === KANAGAWA_WEST_AREA_CODE
+      (a) => a.area.code === KANAGAWA_PREF_CODE
     )
     const tempArea = tempSeries?.areas?.find(
-      (a) => a.area.code === KANAGAWA_WEST_AREA_CODE
+      (a) => a.area.code === YOKOHAMA_TEMP_CODE
     )
 
     if (weatherArea && weatherSeries.timeDefines) {

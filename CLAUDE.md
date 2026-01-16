@@ -149,3 +149,27 @@ npm run build    # ビルド
 npm run start    # 本番環境起動
 npm run lint     # リント
 ```
+
+## デプロイ手順
+
+コード修正から本番リリースまでの手順：
+
+```bash
+# 1. ローカルでビルド確認
+npm run build
+
+# 2. 変更をコミット
+git add <変更ファイル>
+git commit -m "コミットメッセージ"
+
+# 3. リモートにプッシュ
+git push origin master
+
+# 4. Vercelにデプロイ（手動）
+npx vercel --prod
+```
+
+**注意事項:**
+- GitHubへのプッシュで自動デプロイも設定可能だが、手動デプロイで確実にリリース
+- デプロイ後は https://sagamihara-weather.vercel.app で動作確認
+- 静的ページは1時間キャッシュされる（`revalidate = 3600`）

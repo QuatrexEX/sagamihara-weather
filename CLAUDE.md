@@ -19,13 +19,12 @@
 - 相模原市（神奈川県西部エリア）の天気を取得
 
 ### データ取得・保存
-- 1日2回（6:00 / 18:00 JST）気象庁APIからデータ取得
+- **画面アクセス時**: 気象庁APIから取得し、DBを更新（1時間ごとにキャッシュ再検証）
+- **Cron Job（保険）**: 1日2回（6:00 / 18:00 JST）実行、アクセスがない場合の保険
   - Vercel Free Tierの制限（2 Cron Jobs）に対応
-- Vercel Cron Jobsで定期実行
-- Cron Job失敗時は気象庁APIから直接取得（フォールバック）
-- メインページは1時間ごとにキャッシュ再検証
 - 1年間のデータを保持（Upsertで重複更新）
 - 1年経過したデータは自動削除
+- 今日の気温は取得不可（気象庁APIの仕様）、明日以降は取得可能
 
 ### 履歴参照
 - カレンダー形式で過去の天気を参照
@@ -67,7 +66,8 @@ src/
 │   └── HistoryContent.tsx         # 履歴ページコンテンツ
 ├── lib/
 │   ├── jma.ts                     # 気象庁API連携
-│   └── supabase.ts                # Supabase クライアント
+│   ├── supabase.ts                # Supabase クライアント
+│   └── weather-db.ts              # DB更新共通処理
 └── types/
     └── weather.ts                 # 型定義
 ```
@@ -85,7 +85,7 @@ flowchart TB
         Page1["天気表示ページ"]
         Page2["履歴カレンダー"]
         API["API Routes"]
-        Cron["Cron Job<br/>6:00/18:00 JST"]
+        Cron["Cron Job<br/>6:00/18:00 JST<br/>（保険）"]
     end
 
     subgraph External["外部サービス"]
@@ -97,6 +97,7 @@ flowchart TB
     SP --> Page1
     PC --> Page2
     SP --> Page2
+    Page1 --> JMA
     Page1 --> Supabase
     Page2 --> Supabase
     Cron --> API
@@ -124,10 +125,11 @@ flowchart TB
 
 - エンドポイント: `https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json`
 - 地域コード:
-  - `140000` - 神奈川県全体（週間予報）
-  - `140020` - 神奈川県西部（今日〜明後日の予報）
-  - `46106` - 横浜（気温観測点）
+  - `140000` - 神奈川県全体（週間予報の天気）
+  - `140020` - 神奈川県西部（今日〜明後日の天気・降水確率）
+  - `46166` - 小田原（気温観測点、相模原市に近い西部の観測点）
 - 相模原市は「西部」エリアに該当
+- 注意: 今日の気温は気象庁APIで提供されない（翌日以降のみ）
 
 ## 環境変数
 

@@ -6,8 +6,8 @@ const JMA_FORECAST_URL = 'https://www.jma.go.jp/bosai/forecast/data/forecast/140
 const KANAGAWA_WEST_AREA_CODE = '140020'
 // 神奈川県全体のarea code（週間予報用）
 const KANAGAWA_PREF_CODE = '140000'
-// 横浜の気温観測点コード（週間予報の気温用）
-const YOKOHAMA_TEMP_CODE = '46106'
+// 小田原の気温観測点コード（相模原市に近い西部の観測点）
+const ODAWARA_TEMP_CODE = '46166'
 
 interface JMAForecastResponse {
   publishingOffice: string
@@ -68,9 +68,6 @@ export async function fetchJMAForecast(): Promise<WeatherForecast[]> {
     const popArea = popSeries?.areas?.find(
       (a) => a.area.code === KANAGAWA_WEST_AREA_CODE
     )
-    const tempArea = tempSeries?.areas?.find(
-      (a) => a.area.code === KANAGAWA_WEST_AREA_CODE
-    )
 
     if (weatherArea && weatherSeries.timeDefines) {
       weatherSeries.timeDefines.forEach((time, index) => {
@@ -90,16 +87,20 @@ export async function fetchJMAForecast(): Promise<WeatherForecast[]> {
       })
     }
 
-    // 気温を追加
-    if (tempArea && tempSeries?.timeDefines) {
+    // 気温を追加（小田原の観測点データを使用）
+    const tempAreaForDaily = tempSeries?.areas?.find(
+      (a) => a.area.code === ODAWARA_TEMP_CODE
+    )
+    if (tempAreaForDaily && tempSeries?.timeDefines) {
       tempSeries.timeDefines.forEach((time, index) => {
         const date = time.split('T')[0]
+        const hour = parseInt(time.split('T')[1]?.split(':')[0] || '0', 10)
         const forecast = forecasts.find((f) => f.date === date)
-        if (forecast && tempArea.temps?.[index]) {
-          const temp = parseInt(tempArea.temps[index], 10)
+        if (forecast && tempAreaForDaily.temps?.[index]) {
+          const temp = parseInt(tempAreaForDaily.temps[index], 10)
           if (!isNaN(temp)) {
-            // 最初の温度は最低気温、2番目は最高気温として扱う
-            if (index % 2 === 0) {
+            // 時刻で判定：朝（0-6時）は最低気温、日中（9時以降）は最高気温
+            if (hour <= 6) {
               forecast.tempLow = temp
             } else {
               forecast.tempHigh = temp
@@ -135,7 +136,7 @@ export async function fetchJMAForecast(): Promise<WeatherForecast[]> {
       (a) => a.area.code === KANAGAWA_PREF_CODE
     )
     const tempArea = tempSeries?.areas?.find(
-      (a) => a.area.code === YOKOHAMA_TEMP_CODE
+      (a) => a.area.code === ODAWARA_TEMP_CODE
     )
 
     if (weatherArea && weatherSeries.timeDefines) {

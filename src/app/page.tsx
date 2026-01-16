@@ -3,6 +3,7 @@ import WeatherBackground from '@/components/WeatherBackground'
 import WeatherCard from '@/components/WeatherCard'
 import WeeklyForecast from '@/components/WeeklyForecast'
 import { fetchJMAForecast } from '@/lib/jma'
+import { upsertForecasts } from '@/lib/weather-db'
 import { getWeatherType, WeatherForecast } from '@/types/weather'
 
 export const revalidate = 3600 // 1時間ごとに再検証
@@ -10,6 +11,12 @@ export const revalidate = 3600 // 1時間ごとに再検証
 async function getWeatherData(): Promise<WeatherForecast[]> {
   try {
     const forecasts = await fetchJMAForecast()
+
+    // DBにデータを保存（バックグラウンドで実行、エラーは無視）
+    upsertForecasts(forecasts).catch((err) =>
+      console.error('Failed to upsert forecasts:', err)
+    )
+
     return forecasts
   } catch (error) {
     console.error('Failed to fetch weather:', error)

@@ -24,7 +24,6 @@
   - Vercel Free Tierの制限（2 Cron Jobs）に対応
 - 1年間のデータを保持（Upsertで重複更新）
 - 1年経過したデータは自動削除
-- 今日の気温は取得不可（気象庁APIの仕様）、明日以降は取得可能
 
 ### 履歴参照
 - カレンダー形式で過去の天気を参照
@@ -115,8 +114,8 @@ flowchart TB
 | date | date | 日付 |
 | weather_code | text | 天気コード |
 | weather_text | text | 天気テキスト（晴れ、曇りなど） |
-| temp_high | integer | 最高気温 |
-| temp_low | integer | 最低気温 |
+| temp_high | integer | 最高気温（未使用） |
+| temp_low | integer | 最低気温（未使用） |
 | pop | integer | 降水確率(%) |
 | fetched_at | timestamptz | 取得日時 |
 | created_at | timestamptz | 作成日時 |
@@ -125,11 +124,9 @@ flowchart TB
 
 - エンドポイント: `https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json`
 - 地域コード:
-  - `140000` - 神奈川県全体（週間予報の天気）
+  - `140000` - 神奈川県全体（週間予報の天気・降水確率）
   - `140020` - 神奈川県西部（今日〜明後日の天気・降水確率）
-  - `46166` - 小田原（気温観測点、相模原市に近い西部の観測点）
 - 相模原市は「西部」エリアに該当
-- 注意: 今日の気温は気象庁APIで提供されない（翌日以降のみ）
 
 ## 環境変数
 

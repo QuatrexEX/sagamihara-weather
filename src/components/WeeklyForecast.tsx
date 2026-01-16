@@ -6,17 +6,27 @@ interface WeeklyForecastProps {
   forecasts: WeatherForecast[]
 }
 
+// JSTの今日の日付を取得
+function getTodayJST(): string {
+  const now = new Date()
+  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000)
+  return jst.toISOString().split('T')[0]
+}
+
 export default function WeeklyForecast({ forecasts }: WeeklyForecastProps) {
+  const todayDate = getTodayJST()
+
   return (
     <div className="glass-card rounded-3xl p-5 md:p-7 animate-fade-in">
       <h2 className="text-2xl text-white mb-6 tracking-wide">週間予報</h2>
 
       <div className="space-y-2">
         {forecasts.map((forecast, index) => {
-          const date = new Date(forecast.date)
+          // 日付文字列をJSTとして解釈
+          const date = new Date(forecast.date + 'T00:00:00+09:00')
           const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][date.getDay()]
           const isWeekend = date.getDay() === 0 || date.getDay() === 6
-          const isToday = index === 0
+          const isToday = forecast.date === todayDate
 
           return (
             <div

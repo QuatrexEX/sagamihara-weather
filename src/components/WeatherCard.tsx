@@ -8,7 +8,8 @@ interface WeatherCardProps {
 }
 
 export default function WeatherCard({ forecast, isToday = false }: WeatherCardProps) {
-  const date = new Date(forecast.date)
+  // 日付文字列をJSTとして解釈
+  const date = new Date(forecast.date + 'T00:00:00+09:00')
   const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][date.getDay()]
   const isWeekend = date.getDay() === 0 || date.getDay() === 6
 

@@ -10,10 +10,18 @@ interface CalendarProps {
   onWeatherChange?: (weatherCode: string | null) => void
 }
 
+// JSTの今日の日付を取得
+function getTodayJST(): string {
+  const now = new Date()
+  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000)
+  return jst.toISOString().split('T')[0]
+}
+
 export default function Calendar({ records, initialYear, initialMonth, onWeatherChange }: CalendarProps) {
   const [year, setYear] = useState(initialYear)
   const [month, setMonth] = useState(initialMonth)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const todayDate = getTodayJST()
 
   const daysInMonth = new Date(year, month, 0).getDate()
   const firstDayOfMonth = new Date(year, month - 1, 1).getDay()
@@ -108,7 +116,7 @@ export default function Calendar({ records, initialYear, initialMonth, onWeather
           const record = recordMap.get(dateStr)
           const dayOfWeek = new Date(year, month - 1, day).getDay()
           const isSelected = selectedDate === dateStr
-          const isToday = dateStr === new Date().toISOString().split('T')[0]
+          const isToday = dateStr === todayDate
 
           return (
             <button
@@ -158,26 +166,12 @@ export default function Calendar({ records, initialYear, initialMonth, onWeather
               <p className="text-xl font-medium text-white mb-2">
                 {selectedRecord.weather_text}
               </p>
-              <div className="flex flex-wrap gap-4 text-sm">
-                {selectedRecord.temp_high !== null && (
-                  <div className="flex items-center gap-1">
-                    <span className="text-white/60">最高</span>
-                    <span className="temp-high font-medium">{selectedRecord.temp_high}°C</span>
-                  </div>
-                )}
-                {selectedRecord.temp_low !== null && (
-                  <div className="flex items-center gap-1">
-                    <span className="text-white/60">最低</span>
-                    <span className="temp-low font-medium">{selectedRecord.temp_low}°C</span>
-                  </div>
-                )}
-                {selectedRecord.pop !== null && (
-                  <div className="flex items-center gap-1">
-                    <span className="text-white/60">降水確率</span>
-                    <span className="text-white font-medium">{selectedRecord.pop}%</span>
-                  </div>
-                )}
-              </div>
+              {selectedRecord.pop !== null && (
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-white/60">降水確率</span>
+                  <span className="text-white font-medium">{selectedRecord.pop}%</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

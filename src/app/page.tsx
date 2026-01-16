@@ -24,13 +24,29 @@ async function getWeatherData(): Promise<WeatherForecast[]> {
   }
 }
 
+// JSTの今日の日付を取得
+function getTodayJST(): string {
+  const now = new Date()
+  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000)
+  return jst.toISOString().split('T')[0]
+}
+
 export default async function Home() {
   const forecasts = await getWeatherData()
-  const today = forecasts[0]
-  const tomorrow = forecasts[1]
-  const weeklyForecasts = forecasts.slice(0, 8) // 今日から一週間後まで（8日間）
+  const todayDate = getTodayJST()
 
-  const currentWeatherType = today ? getWeatherType(today.weatherCode) : 'sunny'
+  // 今日と明日のforecastを日付で判定
+  const todayForecast = forecasts.find((f) => f.date === todayDate)
+  const todayIndex = forecasts.findIndex((f) => f.date === todayDate)
+  const tomorrowForecast = todayIndex >= 0 ? forecasts[todayIndex + 1] : forecasts[0]
+
+  // 今日のデータがない場合は最初のデータを使用
+  const displayToday = todayForecast || forecasts[0]
+  const displayTomorrow = tomorrowForecast || forecasts[1]
+
+  const weeklyForecasts = forecasts.slice(0, 8)
+
+  const currentWeatherType = displayToday ? getWeatherType(displayToday.weatherCode) : 'sunny'
 
   return (
     <WeatherBackground weatherType={currentWeatherType}>
@@ -65,8 +81,8 @@ export default async function Home() {
             今日・明日の天気
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {today && <WeatherCard forecast={today} isToday />}
-            {tomorrow && <WeatherCard forecast={tomorrow} />}
+            {displayToday && <WeatherCard forecast={displayToday} isToday={displayToday.date === todayDate} />}
+            {displayTomorrow && <WeatherCard forecast={displayTomorrow} />}
           </div>
         </section>
 

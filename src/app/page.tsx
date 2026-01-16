@@ -21,7 +21,7 @@ export default async function Home() {
   const forecasts = await getWeatherData()
   const today = forecasts[0]
   const tomorrow = forecasts[1]
-  const weeklyForecasts = forecasts.slice(0, 7)
+  const weeklyForecasts = forecasts.slice(0, 8) // 今日から一週間後まで（8日間）
 
   const currentWeatherType = today ? getWeatherType(today.weatherCode) : 'sunny'
 
@@ -71,7 +71,7 @@ export default async function Home() {
         {/* Footer */}
         <footer className="mt-12 text-center text-white/60 text-sm">
           <p>データ提供: 気象庁</p>
-          <p className="mt-1">最終更新: {new Date().toLocaleString('ja-JP')}</p>
+          <p className="mt-1">最終更新: {new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}</p>
         </footer>
       </div>
     </WeatherBackground>

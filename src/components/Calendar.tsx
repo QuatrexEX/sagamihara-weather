@@ -7,9 +7,10 @@ interface CalendarProps {
   records: WeatherRecord[]
   initialYear: number
   initialMonth: number
+  onWeatherChange?: (weatherCode: string | null) => void
 }
 
-export default function Calendar({ records, initialYear, initialMonth }: CalendarProps) {
+export default function Calendar({ records, initialYear, initialMonth, onWeatherChange }: CalendarProps) {
   const [year, setYear] = useState(initialYear)
   const [month, setMonth] = useState(initialMonth)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
@@ -21,6 +22,12 @@ export default function Calendar({ records, initialYear, initialMonth }: Calenda
   records.forEach((record) => {
     recordMap.set(record.date, record)
   })
+
+  const handleDateSelect = (dateStr: string) => {
+    setSelectedDate(dateStr)
+    const record = recordMap.get(dateStr)
+    onWeatherChange?.(record?.weather_code || null)
+  }
 
   const prevMonth = () => {
     if (month === 1) {
@@ -102,7 +109,7 @@ export default function Calendar({ records, initialYear, initialMonth }: Calenda
           return (
             <button
               key={day}
-              onClick={() => setSelectedDate(dateStr)}
+              onClick={() => handleDateSelect(dateStr)}
               className={`
                 aspect-square rounded-lg flex flex-col items-center justify-center
                 transition-all hover:scale-105
